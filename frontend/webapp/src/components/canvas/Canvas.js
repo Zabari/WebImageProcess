@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import './Canvas.css';
 import Filter from './buttons/filter/Filter.js';
+import Flip from './buttons/flip/Flip.js';
+import Rotate from './buttons/rotate/Rotate.js';
+import Undo from './buttons/undo/Undo.js';
+import Trim from './buttons/trim/Trim.js';
 
 class Canvas extends Component {
 
@@ -67,7 +71,7 @@ handleCanvasClick(e){
         let currentDegrees = this.state.degrees;
         currentDegrees = (currentDegrees+ 90) % 360;
         this.setState({degrees : currentDegrees});
-        console.log('desired rotation is ... ' + currentDegrees);
+        //console.log('desired rotation is ... ' + currentDegrees);
     }
     else if(this.state.currentTool === 'flip'){
         this.renderFlip();
@@ -75,10 +79,6 @@ handleCanvasClick(e){
     else if(this.state.currentTool === 'color'){
         this.renderColorSlider();
     }
-}
-
-renderColorSlider(){
-
 }
 
 renderFlip(){
@@ -95,6 +95,7 @@ renderFlip(){
           <h1>This is the canvas</h1>
           <h2>Coordinates: {x} {y} </h2>
           <Filter></Filter>
+          <Flip></Flip>
       </div>
     );
   }
