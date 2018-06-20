@@ -1,0 +1,26 @@
+{
+  "name": "webimageprocess",
+  "version": "1.0.0",
+  "description": "Web-Based Image Processor",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zabari/WebImageProcess.git"
+  },
+  "author": "Aaron and Daniel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zabari/WebImageProcess/issues"
+  },
+  "homepage": "https://github.com/Zabari/WebImageProcess#readme",
+  "dependencies": {
+    "better-sqlite3": "^4.1.4",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "shelljs": "^0.8.2"
+  }
+}
