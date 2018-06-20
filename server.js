@@ -3,12 +3,12 @@ var app = express();
 var session = require('express-session');
 var Database = require('better-sqlite3');
 var shell = require('shelljs');
+const pubdir="frontend/webapp/public/images/"
 app.use(session({
-  resave: true,
-  saveUninitialized: true,
-  secret: "you-don't-know-this",
-  commands:[{command:"color",params:"blue"}],
-  filenames:["image.jpg"]
+    resave: true,
+    saveUninitialized: true,
+    secret: "you-don't-know-this",
+    commands:[]
 }));
 // var x=shell.exec("convert",{silent:true});
 // console.log(x.stdout);
@@ -18,40 +18,67 @@ app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodie
 
 app.post('/api/add', function (req, res) {
     var db = new Database('processes.db');
-    db.prepare("CREATE TABLE IF NOT EXISTS files(id PRIMARY KEY, filename TEXT)").run();
+    db.prepare("CREATE TABLE IF NOT EXISTS files(filename TEXT)").run();
     var stmt=db.prepare("INSERT INTO files (filename) VALUES(?);");
     stmt.run(0);
     stmt=db.prepare("SELECT last_insert_rowid()");
     var id=stmt.get()['last_insert_rowid()'];
     db.close();
     var url=req.body.url;
-    req.session.filenames.push(id);
-    shell.exec("curl "+url+" > "+id);
-    res.send(req.session.filenames);
+    // console.log(req.session);
+    shell.mkdir("-p",pubdir);
+    shell.exec("curl "+url+" > "+pubdir+id);
+    res.send({id});
+});
+app.post('/api', function (req, res) {
+    res.send(req.session);
+});
+app.post('/api/undo', function (req, res) {
+    // var filename=parseInt(req.body.filename);
+    var filename=req.body.filename;
+
+    //console.log(typeof filename);
+    var db = new Database('processes.db');
+    db.prepare("CREATE TABLE IF NOT EXISTS files(filename TEXT)").run();
+    var stmt=db.prepare("SELECT filename FROM files WHERE rowid=?");
+    var id=stmt.get(filename);
+    console.log(id);
+    if (id){
+        db.prepare("DELETE FROM files WHERE rowid=?").run(filename);
+
+        db.close();
+        shell.rm(pubdir+filename);
+        res.send({id:id.filename});
+    }
+    res.send();
 });
 
 
 app.post('/api/edit', function (req, res) {
-  var command=req.body.command;
-  var filename=req.session.filenames[req.session.filenames.length-1];
-  req.session.commands.push(command);
-  var db = new Database('processes.db');
-  db.prepare("CREATE TABLE IF NOT EXISTS files(id PRIMARY KEY, filename TEXT)").run();
-  var stmt=db.prepare("INSERT INTO files (filename) VALUES(?);");
-  stmt.run(filename);
-  stmt=db.prepare("SELECT last_insert_rowid()");
-  var id=stmt.get()['last_insert_rowid()'];
-  db.close();
-  var url=req.body.url;
-  req.session.filenames.push(id);
-  var str="";
-  if (command.command=="color"){
-      str="convert "+filename+" -fill "+command.params[0]+" -colorize "+command.params[1]+" "+id;
-      // console.log(str);
-      shell.exec(str);
-  }
-  res.send(req.session.filenames);
+    var command=req.body.command; //{command:command params:[param1,param2]}
+    var filename=req.body.filename;
+    command=JSON.parse(command);
+    if (!req.session.commands){
+        req.session.commands=[];
+    }
+    req.session.commands.push(command);
+    var db = new Database('processes.db');
+    db.prepare("CREATE TABLE IF NOT EXISTS files(filename TEXT)").run();
+    var stmt=db.prepare("INSERT INTO files (filename) VALUES(?);");
+    stmt.run(filename);
+    stmt=db.prepare("SELECT last_insert_rowid()");
+    var id=stmt.get()['last_insert_rowid()'];
+    db.close();
+    var url=req.body.url;
+    var str="";
+    if (command.command=="color"){
+        str="convert "+pubdir+filename+" -fill "+command.params[0]+" -colorize "+command.params[1]+" "+pubdir+id;
+        // console.log(str);
+        shell.exec(str);
+    }
+    res.send({id});
 });
+
 
 // app.get('/api/edit', function (req, res) {
 //   var command={command:"color",params:["#67AD22",50]};
