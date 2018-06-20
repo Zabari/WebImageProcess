@@ -59,3 +59,7 @@ typings/
 
 # next.js build output
 .next
+
+# images
+
+frontend/webapp/public/images/

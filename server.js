@@ -73,7 +73,23 @@ app.post('/api/edit', function (req, res) {
     var str="";
     if (command.command=="color"){
         str="convert "+pubdir+filename+" -fill "+command.params[0]+" -colorize "+command.params[1]+" "+pubdir+id;
-        // console.log(str);
+    }
+    if (command.command=="crop"){
+        if (command.params[1]>=0){
+            command.params[1]="+"+command.params[1].toString();
+        }
+        else{
+            command.params[1]=command.params[1].toString();
+        }
+        if (command.params[2]>=0){
+            command.params[2]="+"+command.params[2].toString();
+        }
+        else{
+            command.params[2]=command.params[2].toString();
+        }
+        str="convert "+pubdir+filename+" -crop '"+command.params[0]+command.params[1]+command.params[2]+"' "+pubdir+id;
+    }
+    if (str){
         shell.exec(str);
     }
     res.send({id});
