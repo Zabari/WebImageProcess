@@ -6,35 +6,27 @@ class Flip extends Component{
     constructor(){
         super();
         this.state = {
-            toggled : {
-                x : false,
-                y : false
-            }
+            xtoggled : false,
+            ytoggled : false
         };
         this.onClickX = this.onClickX.bind(this);
         this.onClickY = this.onClickY.bind(this);
     }
 
     onClickX(e){
-        let isToggledX = !this.state.toggled.x;
-        let isToggledY = this.state.toggled.y;
+        let isToggledX = !this.state.xtoggled;
         this.setState({
-            toggled : {
-                isToggledX, isToggledY
-            }
+            xtoggled : isToggledX
         })
-        this.props.callback(this.state.toggled);
+        this.props.callback(this.state.xtoggled);
     }
 
     onClickY(e){
-        let isToggledX = this.state.toggled.x;
-        let isToggledY = !this.state.toggled.y;
+        let isToggledY = !this.state.ytoggled;
         this.setState({
-            toggled : {
-                isToggledX, isToggledY
-            }
+            ytoggled : isToggledY
         })
-        this.props.callback(this.state.toggled);
+        this.props.callback(this.state.ytoggled);
     }
 
     render(){

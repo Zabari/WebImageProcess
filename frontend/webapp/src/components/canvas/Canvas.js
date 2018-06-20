@@ -21,7 +21,7 @@ class Canvas extends Component {
               y: 0
           },
           filter:{
-              color: "",
+              color: 0x00,
               percent: 0
           },
           mouseX: 0,
@@ -42,17 +42,24 @@ class Canvas extends Component {
       });
   }
 
-  filterCallback = (filterData) => {
+  filterCallback = (filterColor,filterPercent) => {
     this.setState({
-        filter : filterData
+        filter : {
+            color: filterColor,
+            percent : filterPercent
+        }
     });
+    console.log(this.state.filter);
   }
 
   flipCallback = (flipData) => {
-    this.setState({
-        flipped : flipData
-    });
-    console.log(this.state.flipped);
+    // this.setState({
+    //     flipped : {
+    //         x : 
+    //         y : 
+    //     }
+    // });
+    // console.log(this.state.flipped);
   }
 
   undoCallback = (undoData) => {
@@ -73,8 +80,9 @@ class Canvas extends Component {
   }
 
   handleSubmit(e){
-      e.preventDefault();
       this.addPhoto();
+      this.saveData();
+      e.preventDefault();
   }
 
 _onMouseMove(e) {
@@ -89,6 +97,7 @@ _onMouseMove(e) {
             'Content-Type': 'application/json'
           },
             body: JSON.stringify({
+            filename: 'test',
             command: this.state.command,
             rotationDegree: this.state.degrees,
             trimX: this.state.trimDimensions.x,
@@ -97,13 +106,14 @@ _onMouseMove(e) {
             filterPercent: this.state.filter.percent
           })
         })
+        .then ( (response) => response.json())
         .then( (response) => {
           this.setState({saved:1});
         });
       }
 
       addPhoto(){
-          console.log("test");
+        
         fetch("/api/add", {
           method: "post",
           headers: {
@@ -111,40 +121,27 @@ _onMouseMove(e) {
             'Content-Type': 'application/json'
           },
             body: JSON.stringify({
-            url : "https://s3.amazonaws.com/cdn-origin-etr.akc.org/wp-content/uploads/2017/11/13001000/Beagle-On-White-01-400x267.jpg"
+                url : this.state.url 
           })
         })
+        .then ( (response) => response.json())
         .then( (response) => {
-        //   this.setState({saved:1});
+        this.setState({saved:1});
         console.log(response);
         });
       }
 
-addData(){
 
-}
 
 handleCanvasClick(e){
 
-    // this.setState({currentTool: 'rotate'});
 
-    // if(this.state.currentTool === 'trim'){
-    //     // let begin_x = this.state.mouseX;
-    //     // let begin_y = this.state.mouseY;
-    // }
-    
-    // else if(this.state.currentTool === 'flip'){
-    //     this.renderFlip();
-    // }
-    // else if(this.state.currentTool === 'color'){
-    //     this.renderColorSlider();
-    // }
+
 }
 
     renderImg(){
         return (
         <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
-            <h1>This is the canvas</h1>
             <h2>Coordinates: {this.state.mouseX} {this.state.mouseY} </h2>
             <Filter callback = {this.filterCallback}/>
             <Flip callback = {this.flipCallback} />
@@ -170,7 +167,6 @@ handleCanvasClick(e){
     return (
 
       <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
-          <h1>This is the canvas</h1>
           <h2>Coordinates: {x} {y} </h2>
           <Filter callback = {this.filterCallback}/>
           <Flip callback = {this.flipCallback} />
@@ -178,7 +174,7 @@ handleCanvasClick(e){
           <Trim callback = {this.trimCallback}/>
           <Undo callback = {this.undoCallback} />
           <Add callback = {this.addCallback}/>
-          <button onClick={this.handleSubmit}>add pic</button>
+          <button type ="button" onClick={this.handleSubmit}>add pic</button>
       </div>
     );
   }

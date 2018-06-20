@@ -8,6 +8,7 @@ class App extends Component {
     return (
       <div className="App">
         <title>Image Processor</title>
+        <h1 text-align="center">This is the canvas</h1>
         <br></br>
         <Canvas></Canvas> 
         
