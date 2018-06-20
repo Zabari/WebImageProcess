@@ -12,6 +12,7 @@ class Canvas extends Component {
   constructor(props){
       super(props);
       this.state = {
+          command : "",
           trimming : false,
           url: "",
           degrees: 0,
@@ -32,6 +33,7 @@ class Canvas extends Component {
       };
       this._onMouseMove=this._onMouseMove.bind(this);
       this.handleCanvasClick = this.handleCanvasClick.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
   }
   
   rotateCallback = (degreeData) => {
@@ -70,6 +72,11 @@ class Canvas extends Component {
     });
   }
 
+  handleSubmit(e){
+      e.preventDefault();
+      this.addPhoto();
+  }
+
 _onMouseMove(e) {
         this.setState({ mouseX: e.nativeEvent.offsetX, mouseY: e.nativeEvent.offsetY });
     }
@@ -82,7 +89,7 @@ _onMouseMove(e) {
             'Content-Type': 'application/json'
           },
             body: JSON.stringify({
-            command: this.state.currentTool,
+            command: this.state.command,
             rotationDegree: this.state.degrees,
             trimX: this.state.trimDimensions.x,
             trimY: this.state.trimDimensions.y,
@@ -92,6 +99,24 @@ _onMouseMove(e) {
         })
         .then( (response) => {
           this.setState({saved:1});
+        });
+      }
+
+      addPhoto(){
+          console.log("test");
+        fetch("/api/add", {
+          method: "post",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+            body: JSON.stringify({
+            url : "https://s3.amazonaws.com/cdn-origin-etr.akc.org/wp-content/uploads/2017/11/13001000/Beagle-On-White-01-400x267.jpg"
+          })
+        })
+        .then( (response) => {
+        //   this.setState({saved:1});
+        console.log(response);
         });
       }
 
@@ -153,6 +178,7 @@ handleCanvasClick(e){
           <Trim callback = {this.trimCallback}/>
           <Undo callback = {this.undoCallback} />
           <Add callback = {this.addCallback}/>
+          <button onClick={this.handleSubmit}>add pic</button>
       </div>
     );
   }
