@@ -9,20 +9,29 @@ class Trim extends Component{
             toggled : false,
             
         };
-        this.onClick = this.onClick.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
-    onClick(e){
+    handleClick(e){
         let isToggled = this.state.toggled;
         this.setState({
             toggled : !isToggled
         })
+        this.props.callback(this.state.toggled);
     }
 
     render(){
+
+        if(this.state.toggled){
+            return(
+             <div className="Trim">
+                <button className="selected" onClick={this.handleClick}>Trim Img</button>
+            </div>    
+            );
+        }
         return(
             <div className="Trim">
-                <button onClick={this.onClick}>Trim Img</button>
+                <button className="unselected" onClick={this.handleClick}>Trim Img</button>
             </div>
         );
     }

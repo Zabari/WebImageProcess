@@ -6,23 +6,42 @@ class Flip extends Component{
     constructor(){
         super();
         this.state = {
-            toggled : false,
-            
+            toggled : {
+                x : false,
+                y : false
+            }
         };
-        this.onClick = this.onClick.bind(this);
+        this.onClickX = this.onClickX.bind(this);
+        this.onClickY = this.onClickY.bind(this);
     }
 
-    onClick(e){
-        let isToggled = this.state.toggled;
+    onClickX(e){
+        let isToggledX = !this.state.toggled.x;
+        let isToggledY = this.state.toggled.y;
         this.setState({
-            toggled : !isToggled
+            toggled : {
+                isToggledX, isToggledY
+            }
         })
+        this.props.callback(this.state.toggled);
+    }
+
+    onClickY(e){
+        let isToggledX = this.state.toggled.x;
+        let isToggledY = !this.state.toggled.y;
+        this.setState({
+            toggled : {
+                isToggledX, isToggledY
+            }
+        })
+        this.props.callback(this.state.toggled);
     }
 
     render(){
         return(
             <div className="Flip">
-                <button onClick={this.onClick}>Flip Img</button>
+                <button onClick={this.onClickX}>Flip X</button>
+                <button onClick={this.onClickY}>Flip Y</button>
             </div>
         );
     }

@@ -19,6 +19,7 @@ class Rotate extends Component{
             toggled : !isToggled,
             degrees : (currentDegrees + 90) % 360
         })
+        this.props.callback(this.state.degrees);
     }
 
     render(){
