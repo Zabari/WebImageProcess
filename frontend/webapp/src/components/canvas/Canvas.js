@@ -80,7 +80,7 @@ class Canvas extends Component {
   }
 
   handleSubmit(e){
-      this.addPhoto();
+      //this.addPhoto();
       this.saveData();
       e.preventDefault();
   }
@@ -108,7 +108,7 @@ _onMouseMove(e) {
         })
         .then ( (response) => response.json())
         .then( (response) => {
-          this.setState({saved:1});
+            
         });
       }
 
@@ -126,7 +126,6 @@ _onMouseMove(e) {
         })
         .then ( (response) => response.json())
         .then( (response) => {
-        this.setState({saved:1});
         console.log(response);
         });
       }
