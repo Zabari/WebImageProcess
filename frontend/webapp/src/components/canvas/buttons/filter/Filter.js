@@ -11,6 +11,7 @@ class Filter extends Component{
         };
         this.onClick = this.onClick.bind(this);
         this.renderSlider = this.renderSlider.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     onClick(e){
@@ -20,13 +21,19 @@ class Filter extends Component{
         })
     }
 
+    handleChange(e){
+        const newval = e.target.value;
+        this.setState({
+            sliderValue : newval
+        });
+        console.log(this.state.sliderValue);
+    }
+
     renderSlider(){
         return(
         <div className="slidecontainer">
-            <input onChange = {function(e){
-                //console.log(value);
-            }}
-            type="range" min="1" max="100" value="50" className="slider" id="myRange" />
+            <input onChange = {this.handleChange}
+            type="range" min="1" max="100" value={this.state.sliderValue} className="slider" id="myRange" />
             <button onClick={this.onClick}>{this.state.toggled ? (<b>Close Slider</b>) : (<b>Open Slider</b>) }</button>
         </div>
         );

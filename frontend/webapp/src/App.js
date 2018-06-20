@@ -7,6 +7,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <title>Image Processor</title>
         <br></br>
         <Canvas></Canvas> 
         

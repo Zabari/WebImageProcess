@@ -24,11 +24,10 @@ class Canvas extends Component {
           },
           filter:{
               color: "",
-              percentage: 0
+              percent: 0
           },
           mouseX: 0,
           mouseY: 0,
-          applyChange: false
       };
       this._onMouseMove=this._onMouseMove.bind(this);
       this.handleCanvasClick = this.handleCanvasClick.bind(this);
@@ -51,7 +50,8 @@ _onMouseMove(e) {
             rotationDegree: this.state.degrees,
             trimX: this.state.trimDimensions.x,
             trimY: this.state.trimDimensions.y,
-            filterType: this.state.filterType
+            filterColor: this.state.filter.color,
+            filterPercent: this.state.filter.percent
           })
         })
         .then( (response) => {
@@ -67,12 +67,7 @@ handleCanvasClick(e){
         // let begin_x = this.state.mouseX;
         // let begin_y = this.state.mouseY;
     }
-    else if(this.state.currentTool === 'rotate'){
-        let currentDegrees = this.state.degrees;
-        currentDegrees = (currentDegrees+ 90) % 360;
-        this.setState({degrees : currentDegrees});
-        //console.log('desired rotation is ... ' + currentDegrees);
-    }
+    
     else if(this.state.currentTool === 'flip'){
         this.renderFlip();
     }
@@ -81,9 +76,6 @@ handleCanvasClick(e){
     }
 }
 
-renderFlip(){
-
-}
 
   render() {
 
@@ -96,6 +88,9 @@ renderFlip(){
           <h2>Coordinates: {x} {y} </h2>
           <Filter></Filter>
           <Flip></Flip>
+          <Rotate></Rotate>
+          <Trim></Trim>
+          <Undo></Undo>
       </div>
     );
   }

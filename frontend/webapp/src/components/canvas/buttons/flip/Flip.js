@@ -21,7 +21,7 @@ class Flip extends Component{
 
     render(){
         return(
-            <div class="Flip">
+            <div className="Flip">
                 <button onClick={this.onClick}>Flip Img</button>
             </div>
         );
