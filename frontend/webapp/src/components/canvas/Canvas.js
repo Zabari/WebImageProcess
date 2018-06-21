@@ -75,11 +75,10 @@ class Canvas extends Component {
     console.log(this.state.flipped));
   }
 
-  undoCallback = (undoData) => {
-    if(undoData){
+  undoCallback = () => {
         this.setState({
             command : 'undo'
-        });
+        }, ()=>
 
         fetch("/api/undo",{
             method: "post",
@@ -94,9 +93,9 @@ class Canvas extends Component {
         })
         .then ( (response) => response.json())
         .then ( (response) => {
-            console.log(response);
-        });
-    }
+            console.log(response.id);
+            this.setState({url:response.id});
+        }));
   }
 
   trimCallback = (trimData) => {
@@ -163,7 +162,7 @@ class Canvas extends Component {
                     flag : !this.state.flag,
                     trimDimensions : dimensionsCopy,
                     command : 'crop'
-                }, () => console.log(this.state.trimDimensions));
+                }, () => {console.log(this.state.trimDimensions);this.performAction();});
             }
             //this.performAction();
         }
@@ -207,7 +206,7 @@ class Canvas extends Component {
                 url : response.id
             });
         });
-        
+
       }
 
       addPhoto(img){

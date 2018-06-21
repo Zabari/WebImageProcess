@@ -65,8 +65,9 @@ app.post('/api/undo', function (req, res) {
         db.prepare("DELETE FROM files WHERE rowid=?").run(filename);
 
         db.close();
-        shell.rm(pubdir+filename);
-        res.send({id:id.filename});
+        shell.rm(pubdir+filename+".jpg");
+        console.log(typeof id.filename);
+        res.send({id:parseInt(id.filename).toString()});
     }
     res.send();
 });
@@ -96,19 +97,20 @@ app.post('/api/edit', function (req, res) {
         str="convert "+pubdir+filename+".jpg -fill \""+params[0]+"\" -colorize "+params[1]+" "+pubdir+id+".jpg";
     }
     if (command=="crop"){
-        if (command.params[1]>=0){
-            command.params[1]="+"+command.params[1].toString();
+        console.log(params);
+        if (params[1]>=0){
+            params[1]="+"+params[1].toString();
         }
         else{
-            command.params[1]=command.params[1].toString();
+            params[1]=params[1].toString();
         }
-        if (command.params[2]>=0){
-            command.params[2]="+"+command.params[2].toString();
+        if (params[2]>=0){
+            params[2]="+"+params[2].toString();
         }
         else{
-            command.params[2]=command.params[2].toString();
+            params[2]=params[2].toString();
         }
-        str="convert "+pubdir+filename+" -crop '"+command.params[0]+command.params[1]+command.params[2]+"' "+pubdir+id;
+        str="convert "+pubdir+filename+".jpg -crop '"+params[0]+params[1]+params[2]+"' "+pubdir+id+".jpg";
     }
     if (str){
         console.log(str);
@@ -118,17 +120,6 @@ app.post('/api/edit', function (req, res) {
 });
 
 
-// app.get('/api/edit', function (req, res) {
-//   var command={command:"color",params:["#67AD22",50]};
-//   var filename="image.jpg";
-//   var str="";
-//   //req.session.commands.push(command);
-//   if (command.command=="color"){
-//       str="convert "+filename+" -fill \""+command.params[0]+"\" -colorize "+command.params[1]+" "+filename;
-//       shell.exec(str);
-//   }
-//   res.send();
-// });
 
 // app.post('/api/save', function (req, res) {
 //     db.prepare("CREATE TABLE IF NOT EXISTS process(id PRIMARY KEY, name TEXT, commands BLOB)").run();
