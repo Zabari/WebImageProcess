@@ -3,7 +3,8 @@ var app = express();
 var session = require('express-session');
 var Database = require('better-sqlite3');
 var shell = require('shelljs');
-const pubdir="frontend/webapp/public/images/"
+const download = require('image-downloader');
+const pubdir="frontend/webapp/public/images/";
 app.use(session({
     resave: true,
     saveUninitialized: true,
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true })); // to support URL-encoded bodie
 
 
 app.post('/api/add', function (req, res) {
+
     var db = new Database('processes.db');
     db.prepare("CREATE TABLE IF NOT EXISTS files(filename TEXT)").run();
     var stmt=db.prepare("INSERT INTO files (filename) VALUES(?);");
@@ -25,10 +27,24 @@ app.post('/api/add', function (req, res) {
     var id=stmt.get()['last_insert_rowid()'];
     db.close();
     var url=req.body.url;
+    const options = {
+        url: url,
+        dest: pubdir+id+".jpg"                 // Save to /path/to/dest/image.jpg
+    };
+    download.image(options)
+    .then(({ filename, image }) => {
+        console.log('File saved to', filename)
+    })
+    .catch((err) => {
+        console.error(err)
+    });
+
     // console.log(req.session);
     shell.mkdir("-p",pubdir);
-    shell.exec("curl "+url+" > "+pubdir+id);
+    var str="curl "+url+" > "+pubdir+id;
+    console.log(str);
     res.send({id});
+    // shell.exec(str,{silent:true});
 });
 app.post('/api', function (req, res) {
     res.send(req.session);
