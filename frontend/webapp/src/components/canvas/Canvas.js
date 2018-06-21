@@ -16,11 +16,12 @@ class Canvas extends Component {
       this.state = {
           command : "",
           trimming : false,
-          tempUrl: "",
+          flag: false,
           filename: "",
           url: "",
           degrees: 0,
           trimDimensions: {
+              area: "",
               x: 0,
               y: 0
           },
@@ -50,10 +51,10 @@ class Canvas extends Component {
   
   rotateCallback = (degreeData) => {
       this.setState({
-        command : 'flip',
+        command : 'rotate',
         degrees : degreeData
-      });
-      console.log(this.state.degrees);
+      }, () =>
+      console.log(this.state.degrees));
   }
 
   filterCallback = (filterColor,filterPercent) => {
@@ -61,20 +62,17 @@ class Canvas extends Component {
         command: 'color',
         filter : {
             color: filterColor,
-            percent : filterPercent
+            percent : filterPercent 
         }
-    });
-    console.log(this.state.filter);
+    }, () => console.log(this.state.filter));
   }
 
   flipCallback = (flipData) => {
-    // this.setState({
-    //     flipped : {
-    //         x : 
-    //         y : 
-    //     }
-    // });
-    // console.log(this.state.flipped);
+    this.setState({
+        command : 'flip',
+        flipped : flipData
+    }, ()=>
+    console.log(this.state.flipped));
   }
 
   undoCallback = (undoData) => {
@@ -103,10 +101,9 @@ class Canvas extends Component {
 
   trimCallback = (trimData) => {
     this.setState({
-        command : 'crop',
         trimming : trimData
-    });
-    console.log(this.state.trimming);
+    }, () =>
+    console.log(this.state.trimming));
   }
 
   addCallback = (imgData) => {
@@ -139,11 +136,51 @@ class Canvas extends Component {
 
   }
 
-_onMouseMove(e) {
-        this.setState({ mouseX: e.nativeEvent.offsetX, mouseY: e.nativeEvent.offsetY });
+    _onMouseMove(e) {
+            this.setState({ 
+                mouseX: e.nativeEvent.offsetX, 
+                mouseY: e.nativeEvent.offsetY,
+            });
     }
     
+    handleCanvasClick(e){
+        if(this.state.trimming){
+            console.log("you're trimming!");
+            if(!this.state.flag){
+                let dimensionsCopy = this.state.trimDimensions;
+                dimensionsCopy.x = this.state.mouseX;
+                dimensionsCopy.y = this.state.mouseY;
+                this.setState({
+                    flag : !this.state.flag,
+                    trimDimensions : dimensionsCopy
+                })
+            }
+            else if(this.state.flag){
+                var rectArea = Math.abs(this.state.mouseX - this.state.trimDimensions.x ) + "x" + Math.abs(this.state.mouseY - this.state.trimDimensions.y);
+                let dimensionsCopy = this.state.trimDimensions;
+                dimensionsCopy.area = rectArea;
+                this.setState({
+                    flag : !this.state.flag,
+                    trimDimensions : dimensionsCopy,
+                    command : 'crop'
+                }, () => console.log(this.state.trimDimensions));
+            }
+            //this.performAction();
+        }
+    }
+
+
     performAction(){
+
+        let commandParams = [];
+        if(this.state.command === 'color'){
+            commandParams = [this.state.filter.color,this.state.filter.percent];
+        }   else if(this.state.command === 'crop'){
+            commandParams = [this.state.trimDimensions.area,this.state.trimDimensions.x,this.state.trimDimensions.y];
+        }   else if(this.state.command === 'rotate'){
+            commandParams = [this.state.degrees];
+        }   
+
         fetch("/api/edit", {
           method: "post",
           headers: {
@@ -151,8 +188,8 @@ _onMouseMove(e) {
             'Content-Type': 'application/json'
           },
             body: JSON.stringify({
-            command : "color",
-            params: ["green",100]
+            command : this.state.command,
+            params: commandParams
             // command: this.state.command,
             // rotationDegree: this.state.degrees,
             // trimX: this.state.trimDimensions.x,
@@ -192,13 +229,6 @@ _onMouseMove(e) {
         });
       }
 
-
-
-handleCanvasClick(e){
-
-
-
-}
 
     renderImg(){
         return (

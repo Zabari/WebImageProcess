@@ -28,8 +28,8 @@ class Filter extends Component{
         const colorval = document.getElementById("colorpicker").value;
         this.setState({
             color: colorval
-        });
-        this.props.callback(this.state.color,this.state.sliderValue);
+        }, () =>
+        this.props.callback(this.state.color,this.state.sliderValue));
     }
 
     handleChange(e){
@@ -37,7 +37,6 @@ class Filter extends Component{
         this.setState({
             sliderValue : newval
         });
-        
     }
 
 

@@ -13,11 +13,11 @@ class Trim extends Component{
     }
 
     handleClick(e){
-        let isToggled = this.state.toggled;
+        var isToggled = !this.state.toggled;
         this.setState({
-            toggled : !isToggled
-        })
-        this.props.callback(this.state.toggled);
+            toggled : isToggled
+        }, () =>
+        this.props.callback(this.state.toggled));
     }
 
     render(){
