@@ -27,6 +27,7 @@ app.post('/api/add', function (req, res) {
     var id=stmt.get()['last_insert_rowid()'];
     db.close();
     var url=req.body.url;
+    shell.mkdir("-p",pubdir);
     const options = {
         url: url,
         dest: pubdir+id+".jpg"                 // Save to /path/to/dest/image.jpg
@@ -34,16 +35,17 @@ app.post('/api/add', function (req, res) {
     download.image(options)
     .then(({ filename, image }) => {
         console.log('File saved to', filename)
+        res.send({id});
     })
     .catch((err) => {
         console.error(err)
     });
 
     // console.log(req.session);
-    shell.mkdir("-p",pubdir);
-    var str="curl "+url+" > "+pubdir+id;
-    console.log(str);
-    res.send({id});
+
+    // var str="curl "+url+" > "+pubdir+id;
+    // console.log(str);
+
     // shell.exec(str,{silent:true});
 });
 app.post('/api', function (req, res) {

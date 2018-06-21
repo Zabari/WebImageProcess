@@ -48,7 +48,7 @@ class Canvas extends Component {
       this.performAction = this.performAction.bind(this);
       this.addPhoto = this.addPhoto.bind(this);
   }
-  
+
   rotateCallback = (degreeData) => {
       this.setState({
         command : 'rotate',
@@ -62,7 +62,7 @@ class Canvas extends Component {
         command: 'color',
         filter : {
             color: filterColor,
-            percent : filterPercent 
+            percent : filterPercent
         }
     }, () => console.log(this.state.filter));
   }
@@ -107,10 +107,10 @@ class Canvas extends Component {
   }
 
   addCallback = (imgData) => {
-    this.setState({
-        url : imgData
-    });
-    this.addPhoto();
+    // this.setState({
+    //     url : imgData
+    // });
+    this.addPhoto(imgData);
   }
 
   handleSubmit(e){
@@ -137,12 +137,12 @@ class Canvas extends Component {
   }
 
     _onMouseMove(e) {
-            this.setState({ 
-                mouseX: e.nativeEvent.offsetX, 
+            this.setState({
+                mouseX: e.nativeEvent.offsetX,
                 mouseY: e.nativeEvent.offsetY,
             });
     }
-    
+
     handleCanvasClick(e){
         if(this.state.trimming){
             console.log("you're trimming!");
@@ -179,7 +179,7 @@ class Canvas extends Component {
             commandParams = [this.state.trimDimensions.area,this.state.trimDimensions.x,this.state.trimDimensions.y];
         }   else if(this.state.command === 'rotate'){
             commandParams = [this.state.degrees];
-        }   
+        }
 
         fetch("/api/edit", {
           method: "post",
@@ -198,7 +198,7 @@ class Canvas extends Component {
             // filterPercent: this.state.filter.percent
           })
         })
-        
+
 
         .then ( (response) => response.json())
         .then ( (response) => {
@@ -209,8 +209,8 @@ class Canvas extends Component {
         this.render();
       }
 
-      addPhoto(){
-        
+      addPhoto(img){
+
         fetch("/api/add", {
           method: "post",
           headers: {
@@ -218,14 +218,14 @@ class Canvas extends Component {
             'Content-Type': 'application/json'
           },
             body: JSON.stringify({
-                url : this.state.url
+                url : img
           })
         })
         .then ( (response) => response.json())
         .then ( (response) => {
                 this.setState({
-                    tempUrl : process.env.PUBLIC_URL + "/images/" + JSON.parse(response.id)
-                }) 
+                    url : process.env.PUBLIC_URL + "/images/" + JSON.parse(response.id)
+                })
         });
       }
 
@@ -243,7 +243,7 @@ class Canvas extends Component {
                 <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
               </ul>
               <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
-              <img src={this.state.url} alt="user img" />
+              <img src={this.state.url+".jpg"} alt="user img" />
             </div>
             </div>
            );
@@ -254,7 +254,7 @@ class Canvas extends Component {
 
     if(this.state.url !== ""){
        //console.log(this.state.url);
-       return this.renderImg(); 
+       return this.renderImg();
     }
     return (
 
