@@ -108,10 +108,10 @@ class Canvas extends Component {
   }
 
   addCallback = (imgData) => {
-    this.setState({
-        url : imgData
-    });
-    this.addPhoto();
+    // this.setState({
+    //     url : imgData
+    // });
+    this.addPhoto(imgData);
   }
 
   handleSubmit(e){
@@ -167,11 +167,11 @@ _onMouseMove(e) {
                 url: this.state.tempUrl
             })
         });
-        this.render();
+        
       }
 
-      addPhoto(){
-        
+      addPhoto(imgData){
+        console.log(imgData)
         fetch("/api/add", {
           method: "post",
           headers: {
@@ -179,14 +179,16 @@ _onMouseMove(e) {
             'Content-Type': 'application/json'
           },
             body: JSON.stringify({
-                url : this.state.url
+                url : imgData
           })
         })
         .then ( (response) => response.json())
         .then ( (response) => {
                 this.setState({
-                    tempUrl : process.env.PUBLIC_URL + "/images/" + JSON.parse(response.id)
+                    // tempUrl : process.env.PUBLIC_URL + "/images/" + JSON.parse(response.id)
+                    url : imgData
                 }) 
+                console.log(response.id)
         });
       }
 
