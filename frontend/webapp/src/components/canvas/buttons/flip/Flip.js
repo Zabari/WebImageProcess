@@ -16,23 +16,19 @@ class Flip extends Component{
     }
 
     onClickX(e){
-        let isToggled = !this.state.toggled.x;
-        const y = this.state.y
+        let toggledCopy = this.state.toggled;
+        toggledCopy.x = !toggledCopy.x;
         this.setState({
-            toggled : {
-                x : isToggled,
-                y : y
-            }
+            toggled : toggledCopy
         }, () =>
         this.props.callback(this.state.toggled));
     }
 
     onClickY(e){
-        let isToggled = !this.state.toggled.y;
-        const x = this.state.x;
+        let toggledCopy = this.state.toggled;
+        toggledCopy.y = !this.state.toggled.y;
         this.setState({
-            x : x,
-            y : isToggled
+            toggled : toggledCopy
         }, () => 
         this.props.callback(this.state.toggled));
     }
