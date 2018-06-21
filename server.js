@@ -74,8 +74,10 @@ app.post('/api/undo', function (req, res) {
 
 app.post('/api/edit', function (req, res) {
     var command=req.body.command; //{command:command params:[param1,param2]}
+    var params=req.body.params;
     var filename=req.body.filename;
-    command=JSON.parse(command);
+    console.log(command);
+    // command=JSON.parse(command);
     if (!req.session.commands){
         req.session.commands=[];
     }
@@ -89,10 +91,11 @@ app.post('/api/edit', function (req, res) {
     db.close();
     var url=req.body.url;
     var str="";
-    if (command.command=="color"){
-        str="convert "+pubdir+filename+" -fill "+command.params[0]+" -colorize "+command.params[1]+" "+pubdir+id;
+    if (command=="color"){
+        console.log("made it");
+        str="convert "+pubdir+filename+".jpg -fill \""+params[0]+"\" -colorize "+params[1]+" "+pubdir+id+".jpg";
     }
-    if (command.command=="crop"){
+    if (command=="crop"){
         if (command.params[1]>=0){
             command.params[1]="+"+command.params[1].toString();
         }
@@ -108,6 +111,7 @@ app.post('/api/edit', function (req, res) {
         str="convert "+pubdir+filename+" -crop '"+command.params[0]+command.params[1]+command.params[2]+"' "+pubdir+id;
     }
     if (str){
+        console.log(str);
         shell.exec(str);
     }
     res.send({id});
