@@ -63,3 +63,6 @@ typings/
 # images
 
 frontend/webapp/public/images/
+
+#databases
+*.db

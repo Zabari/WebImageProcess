@@ -7,10 +7,14 @@ class Filter extends Component{
         super();
         this.state = {
             toggled : false,
-            sliderValue : 50
+            sliderValue : 50,
+            color: 0x00
         };
         this.onClick = this.onClick.bind(this);
-        this.renderSlider = this.renderSlider.bind(this);
+        this.renderInputs = this.renderInputs.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+
     }
 
     onClick(e){
@@ -20,25 +24,41 @@ class Filter extends Component{
         })
     }
 
-    renderSlider(){
+    handleSubmit(e){
+        const colorval = document.getElementById("colorpicker").value;
+        this.setState({
+            color: colorval
+        }, () =>
+        this.props.callback(this.state.color,this.state.sliderValue));
+    }
+
+    handleChange(e){
+        const newval = e.target.value;
+        this.setState({
+            sliderValue : newval
+        });
+    }
+
+
+    renderInputs(){
         return(
         <div className="slidecontainer">
-            <input onChange = {function(e){
-                //console.log(value);
-            }}
-            type="range" min="1" max="100" value="50" className="slider" id="myRange" />
-            <button onClick={this.onClick}>{this.state.toggled ? (<b>Close Slider</b>) : (<b>Open Slider</b>) }</button>
+            <input onChange = {this.handleChange}
+            type="range" min="1" max="100" value={this.state.sliderValue} className="slider" id="myRange" />
+            <input type="color" id="colorpicker"/>
+            <button onClick={this.handleSubmit}>Make Filter</button>
+            <button onClick={this.onClick}>{this.state.toggled ? (<b>Close Filter</b>) : (<b>Open Filter</b>) }</button>
         </div>
         );
     }
 
     render(){
         if(this.state.toggled){
-            return this.renderSlider();
+            return this.renderInputs();
         }
         return(
             <div className="filter-button">
-        <button onClick={this.onClick}>{this.state.toggled ? (<b>Close Slider</b>) : (<b>Open Slider</b>) }</button>
+        <button onClick={this.onClick}> <b>Filter</b> </button>
             </div>
         );
     }

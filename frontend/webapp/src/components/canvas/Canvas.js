@@ -5,104 +5,276 @@ import Flip from './buttons/flip/Flip.js';
 import Rotate from './buttons/rotate/Rotate.js';
 import Undo from './buttons/undo/Undo.js';
 import Trim from './buttons/trim/Trim.js';
+import Add from './buttons/add/Add.js';
+
+'use strict';
 
 class Canvas extends Component {
 
   constructor(props){
       super(props);
       this.state = {
-          currentTool: [
-              "trim",
-              "rotate",
-              "flip",
-              "filter"
-          ],
+          command : "",
+          trimming : false,
+          flag: false,
+          filename: "",
+          url: "",
           degrees: 0,
           trimDimensions: {
+              area: "",
               x: 0,
               y: 0
           },
           filter:{
-              color: "",
-              percentage: 0
+              color: 0x00,
+              percent: 0
           },
           mouseX: 0,
           mouseY: 0,
-          applyChange: false
+          flipped : {
+              x : false,
+              y : false
+          }
       };
       this._onMouseMove=this._onMouseMove.bind(this);
       this.handleCanvasClick = this.handleCanvasClick.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
+      this.rotateCallback = this.rotateCallback.bind(this);
+      this.filterCallback = this.filterCallback.bind(this);
+      this.flipCallback = this.flipCallback.bind(this);
+      this.undoCallback = this.undoCallback.bind(this);
+      this.trimCallback = this.trimCallback.bind(this);
+      this.addCallback = this.addCallback.bind(this);
+      this.performAction = this.performAction.bind(this);
+      this.addPhoto = this.addPhoto.bind(this);
   }
-    
+  
+  rotateCallback = (degreeData) => {
+      this.setState({
+        command : 'rotate',
+        degrees : degreeData
+      }, () =>
+      console.log(this.state.degrees));
+  }
 
-_onMouseMove(e) {
-        this.setState({ mouseX: e.nativeEvent.offsetX, mouseY: e.nativeEvent.offsetY });
+  filterCallback = (filterColor,filterPercent) => {
+    this.setState({
+        command: 'color',
+        filter : {
+            color: filterColor,
+            percent : filterPercent 
+        }
+    }, () => console.log(this.state.filter));
+  }
+
+  flipCallback = (flipData) => {
+    this.setState({
+        command : 'flip',
+        flipped : flipData
+    }, ()=>
+    console.log(this.state.flipped));
+  }
+
+  undoCallback = (undoData) => {
+    if(undoData){
+        this.setState({
+            command : 'undo'
+        });
+
+        fetch("/api/undo",{
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                command: this.state.command,
+                filename: this.state.url
+            })
+        })
+        .then ( (response) => response.json())
+        .then ( (response) => {
+            console.log(response);
+        });
+    }
+  }
+
+  trimCallback = (trimData) => {
+    this.setState({
+        trimming : trimData
+    }, () =>
+    console.log(this.state.trimming));
+  }
+
+  addCallback = (imgData) => {
+    this.setState({
+        url : imgData
+    });
+    this.addPhoto();
+  }
+
+  handleSubmit(e){
+    e.preventDefault();
+    console.log(this.state.url);
+    fetch("/api/add/", {
+      method: "post",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+        body: JSON.stringify({
+            url : this.state.url
+      })
+  })
+    .then ( (response) => response.json())
+    .then ( (response) => {
+            console.log(response.id);
+    });
+    //this.performAction();
+    //   this.performAction();
+    //   e.preventDefault();
+
+  }
+
+    _onMouseMove(e) {
+            this.setState({ 
+                mouseX: e.nativeEvent.offsetX, 
+                mouseY: e.nativeEvent.offsetY,
+            });
     }
     
-    sendData(){
-        fetch("/api/save", {
+    handleCanvasClick(e){
+        if(this.state.trimming){
+            console.log("you're trimming!");
+            if(!this.state.flag){
+                let dimensionsCopy = this.state.trimDimensions;
+                dimensionsCopy.x = this.state.mouseX;
+                dimensionsCopy.y = this.state.mouseY;
+                this.setState({
+                    flag : !this.state.flag,
+                    trimDimensions : dimensionsCopy
+                })
+            }
+            else if(this.state.flag){
+                var rectArea = Math.abs(this.state.mouseX - this.state.trimDimensions.x ) + "x" + Math.abs(this.state.mouseY - this.state.trimDimensions.y);
+                let dimensionsCopy = this.state.trimDimensions;
+                dimensionsCopy.area = rectArea;
+                this.setState({
+                    flag : !this.state.flag,
+                    trimDimensions : dimensionsCopy,
+                    command : 'crop'
+                }, () => console.log(this.state.trimDimensions));
+            }
+            //this.performAction();
+        }
+    }
+
+
+    performAction(){
+
+        let commandParams = [];
+        if(this.state.command === 'color'){
+            commandParams = [this.state.filter.color,this.state.filter.percent];
+        }   else if(this.state.command === 'crop'){
+            commandParams = [this.state.trimDimensions.area,this.state.trimDimensions.x,this.state.trimDimensions.y];
+        }   else if(this.state.command === 'rotate'){
+            commandParams = [this.state.degrees];
+        }   
+
+        fetch("/api/edit", {
           method: "post",
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           },
             body: JSON.stringify({
-            command: this.state.currentTool,
-            rotationDegree: this.state.degrees,
-            trimX: this.state.trimDimensions.x,
-            trimY: this.state.trimDimensions.y,
-            filterType: this.state.filterType
+            command : this.state.command,
+            params: commandParams
+            // command: this.state.command,
+            // rotationDegree: this.state.degrees,
+            // trimX: this.state.trimDimensions.x,
+            // trimY: this.state.trimDimensions.y,
+            // filterColor: this.state.filter.color,
+            // filterPercent: this.state.filter.percent
           })
         })
-        .then( (response) => {
-          this.setState({saved:1});
+        
+
+        .then ( (response) => response.json())
+        .then ( (response) => {
+            this.setState({
+                url: this.state.tempUrl
+            })
+        });
+        this.render();
+      }
+
+      addPhoto(){
+        
+        fetch("/api/add", {
+          method: "post",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+            body: JSON.stringify({
+                url : this.state.url
+          })
+        })
+        .then ( (response) => response.json())
+        .then ( (response) => {
+                this.setState({
+                    tempUrl : process.env.PUBLIC_URL + "/images/" + JSON.parse(response.id)
+                }) 
         });
       }
 
-handleCanvasClick(e){
 
-    this.setState({currentTool: 'rotate'});
+    renderImg(){
+        return (
+            <div className="Screen">
+            <ul>
+                <li><Filter callback = {this.filterCallback}/></li>
+                <li><Flip callback = {this.flipCallback} /></li>
+                <li><Rotate callback = {this.rotateCallback} /></li>
+                <li><Trim callback = {this.trimCallback} /></li>
+                <li><Undo callback = {this.undoCallback} /></li>
+                <li><Add callback = {this.addCallback} /></li>
+                <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
+              </ul>
+              <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
+              <img src={this.state.url} alt="user img" />
+            </div>
+            </div>
+           );
+    }
 
-    if(this.state.currentTool === 'trim'){
-        // let begin_x = this.state.mouseX;
-        // let begin_y = this.state.mouseY;
-    }
-    else if(this.state.currentTool === 'rotate'){
-        let currentDegrees = this.state.degrees;
-        currentDegrees = (currentDegrees+ 90) % 360;
-        this.setState({degrees : currentDegrees});
-        //console.log('desired rotation is ... ' + currentDegrees);
-    }
-    else if(this.state.currentTool === 'flip'){
-        this.renderFlip();
-    }
-    else if(this.state.currentTool === 'color'){
-        this.renderColorSlider();
-    }
-}
-
-renderFlip(){
-
-}
 
   render() {
 
-    const x = this.state.mouseX;
-    const y = this.state.mouseY;
+    if(this.state.url !== ""){
+       //console.log(this.state.url);
+       return this.renderImg(); 
+    }
     return (
 
-      <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
-          <h1>This is the canvas</h1>
-          <h2>Coordinates: {x} {y} </h2>
-          <Filter></Filter>
-          <Flip></Flip>
+      <div className="Screen">
+          <ul>
+              <li><Filter callback = {this.filterCallback}/></li>
+              <li><Flip callback = {this.flipCallback} /></li>
+              <li><Rotate callback = {this.rotateCallback} /></li>
+              <li><Trim callback = {this.trimCallback} /></li>
+              <li><Undo callback = {this.undoCallback} /></li>
+              <li><Add callback = {this.addCallback} /></li>
+              <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
+            </ul>
+            <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
+          </div>
       </div>
     );
   }
 }
 
 // Need event for when user exits the page
-
-// Slider for the color! 
 
 export default Canvas;
