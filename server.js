@@ -57,7 +57,7 @@ app.post('/api/undo', function (req, res) {
 app.post('/api/edit', function (req, res) {
     var command=req.body.command; //{command:command params:[param1,param2]}
     var filename=req.body.filename;
-    //command=JSON.parse(command);
+    command=JSON.parse(command);
     if (!req.session.commands){
         req.session.commands=[];
     }
