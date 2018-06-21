@@ -17,6 +17,7 @@ class Undo extends Component{
         this.setState({
             toggled : !isToggled
         })
+        this.props.callback(this.state.toggled);
     }
 
     render(){

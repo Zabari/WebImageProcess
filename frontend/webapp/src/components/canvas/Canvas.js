@@ -15,6 +15,7 @@ class Canvas extends Component {
           command : "",
           trimming : false,
           tempUrl: "",
+          filename: "",
           url: "",
           degrees: 0,
           trimDimensions: {
@@ -35,16 +36,27 @@ class Canvas extends Component {
       this._onMouseMove=this._onMouseMove.bind(this);
       this.handleCanvasClick = this.handleCanvasClick.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
+      this.rotateCallback = this.rotateCallback.bind(this);
+      this.filterCallback = this.filterCallback.bind(this);
+      this.flipCallback = this.flipCallback.bind(this);
+      this.undoCallback = this.undoCallback.bind(this);
+      this.trimCallback = this.trimCallback.bind(this);
+      this.addCallback = this.addCallback.bind(this);
+      this.performAction = this.performAction.bind(this);
+      this.addPhoto = this.addPhoto.bind(this);
   }
   
   rotateCallback = (degreeData) => {
       this.setState({
+        command : 'flip',
         degrees : degreeData
       });
+      console.log(this.state.degrees);
   }
 
   filterCallback = (filterColor,filterPercent) => {
     this.setState({
+        command: 'color',
         filter : {
             color: filterColor,
             percent : filterPercent
@@ -64,11 +76,32 @@ class Canvas extends Component {
   }
 
   undoCallback = (undoData) => {
-    // 
+    if(undoData){
+        this.setState({
+            command : 'undo'
+        });
+
+        fetch("/api/undo",{
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                command: this.state.command,
+                filename: this.state.url
+            })
+        })
+        .then ( (response) => response.json())
+        .then ( (response) => {
+            console.log(response);
+        });
+    }
   }
 
   trimCallback = (trimData) => {
     this.setState({
+        command : 'crop',
         trimming : trimData
     });
     console.log(this.state.trimming);
@@ -82,9 +115,26 @@ class Canvas extends Component {
   }
 
   handleSubmit(e){
-      //this.addPhoto();
-      this.performAction();
-      e.preventDefault();
+    e.preventDefault();
+    console.log(this.state.url);
+    fetch("/api/add/", {
+      method: "post",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+        body: JSON.stringify({
+            url : this.state.url
+      })
+  })
+    .then ( (response) => response.json())
+    .then ( (response) => {
+            console.log(response.id);
+    });
+    //this.performAction();
+    //   this.performAction();
+    //   e.preventDefault();
+
   }
 
 _onMouseMove(e) {

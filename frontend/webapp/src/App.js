@@ -8,7 +8,9 @@ class App extends Component {
     return (
       <div className="App">
         <title>Image Processor</title>
-        <h1 text-align="center">This is the canvas</h1>
+        <div className="page-header">
+          <h1 text-align="center">Welcome to IMGPRO.</h1>
+        </div>
         <br></br>
         <Canvas></Canvas> 
         
