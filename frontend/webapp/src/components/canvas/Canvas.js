@@ -7,6 +7,8 @@ import Undo from './buttons/undo/Undo.js';
 import Trim from './buttons/trim/Trim.js';
 import Add from './buttons/add/Add.js';
 
+'use strict';
+
 class Canvas extends Component {
 
   constructor(props){
