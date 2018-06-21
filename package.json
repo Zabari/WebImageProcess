@@ -21,6 +21,7 @@
     "better-sqlite3": "^4.1.4",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
+    "image-downloader": "^3.4.1",
     "shelljs": "^0.8.2"
   }
 }
