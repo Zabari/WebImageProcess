@@ -59,12 +59,12 @@ class Canvas extends Component {
 
   filterCallback = (filterColor,filterPercent) => {
     this.setState({
-        command: 'color',
+        command: "color",
         filter : {
             color: filterColor,
             percent : filterPercent
         }
-    }, () => console.log(this.state.filter));
+    }, () => this.performAction());
   }
 
   flipCallback = (flipData) => {
@@ -188,6 +188,7 @@ class Canvas extends Component {
             'Content-Type': 'application/json'
           },
             body: JSON.stringify({
+            filename : this.state.url,
             command : this.state.command,
             params: commandParams
             // command: this.state.command,
@@ -203,10 +204,10 @@ class Canvas extends Component {
         .then ( (response) => response.json())
         .then ( (response) => {
             this.setState({
-                url: this.state.tempUrl
-            })
+                url : response.id
+            });
         });
-        this.render();
+        
       }
 
       addPhoto(img){
@@ -224,7 +225,7 @@ class Canvas extends Component {
         .then ( (response) => response.json())
         .then ( (response) => {
                 this.setState({
-                    url : process.env.PUBLIC_URL + "/images/" + JSON.parse(response.id)
+                    url :  JSON.parse(response.id)
                 })
         });
       }
@@ -243,7 +244,7 @@ class Canvas extends Component {
                 <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
               </ul>
               <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
-              <img src={this.state.url+".jpg"} alt="user img" />
+              <img src={process.env.PUBLIC_URL + "/images/" +this.state.url+".jpg"} alt="user img" />
             </div>
             </div>
            );
