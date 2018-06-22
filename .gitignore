@@ -62,7 +62,7 @@ typings/
 
 # images
 
-frontend/webapp/public/images/
+images/
 
 #databases
 *.db

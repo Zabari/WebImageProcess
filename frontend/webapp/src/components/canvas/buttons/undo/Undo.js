@@ -7,17 +7,14 @@ class Undo extends Component{
         super();
         this.state = {
             toggled : false,
-            
+
         };
         this.onClick = this.onClick.bind(this);
     }
 
     onClick(e){
-        let isToggled = this.state.toggled;
-        this.setState({
-            toggled : !isToggled
-        }, () =>
-        this.props.callback(this.state.toggled));
+
+        this.props.callback();
     }
 
     render(){

@@ -8,7 +8,6 @@ import Trim from './buttons/trim/Trim.js';
 import Add from './buttons/add/Add.js';
 
 'use strict';
-
 class Canvas extends Component {
 
   constructor(props){
@@ -34,7 +33,8 @@ class Canvas extends Component {
           flipped : {
               x : false,
               y : false
-          }
+          },
+          localURL:"http://localhost:3001"
       };
       this._onMouseMove=this._onMouseMove.bind(this);
       this.handleCanvasClick = this.handleCanvasClick.bind(this);
@@ -54,7 +54,7 @@ class Canvas extends Component {
         command : 'rotate',
         degrees : degreeData
       }, () =>
-      console.log(this.state.degrees));
+      this.performAction({}));
   }
 
   filterCallback = (filterColor,filterPercent) => {
@@ -64,22 +64,25 @@ class Canvas extends Component {
             color: filterColor,
             percent : filterPercent
         }
-    }, () => this.performAction());
+    }, () => this.performAction({}));
   }
 
   flipCallback = (flipData) => {
+
     this.setState({
         command : 'flip',
         flipped : flipData
     }, ()=>
-    console.log(this.state.flipped));
+    this.performAction(          {flipped : {
+                  x : false,
+                  y : false
+              }}));
   }
 
-  undoCallback = (undoData) => {
-    if(undoData){
+  undoCallback = () => {
         this.setState({
             command : 'undo'
-        });
+        }, ()=>
 
         fetch("/api/undo",{
             method: "post",
@@ -94,9 +97,9 @@ class Canvas extends Component {
         })
         .then ( (response) => response.json())
         .then ( (response) => {
-            console.log(response);
-        });
-    }
+            console.log(response.id);
+            this.setState({url:response.id});
+        }));
   }
 
   trimCallback = (trimData) => {
@@ -163,22 +166,36 @@ class Canvas extends Component {
                     flag : !this.state.flag,
                     trimDimensions : dimensionsCopy,
                     command : 'crop'
-                }, () => console.log(this.state.trimDimensions));
+                }, () => {console.log(this.state.trimDimensions);this.performAction(
+                    {
+                        flag : !this.state.flag,
+                        trimDimensions: {
+                            area: "",
+                            x: 0,
+                            y: 0
+                        },
+                        trimming:!this.state.trimming
+                    })});
             }
             //this.performAction();
         }
     }
 
 
-    performAction(){
+    performAction(prevState){
 
         let commandParams = [];
         if(this.state.command === 'color'){
             commandParams = [this.state.filter.color,this.state.filter.percent];
         }   else if(this.state.command === 'crop'){
             commandParams = [this.state.trimDimensions.area,this.state.trimDimensions.x,this.state.trimDimensions.y];
+
         }   else if(this.state.command === 'rotate'){
-            commandParams = [this.state.degrees];
+                commandParams = [this.state.degrees];
+        }
+            else if(this.state.command === 'flip'){
+                commandParams = [this.state.flipped.x,this.state.flipped.y];
+                // console.log(commandParams);
         }
 
         fetch("/api/edit", {
@@ -206,8 +223,12 @@ class Canvas extends Component {
             this.setState({
                 url : response.id
             });
+            // console.log(prevState);
+            this.setState(
+                prevState
+            );
         });
-        
+
       }
 
       addPhoto(img){
@@ -244,7 +265,7 @@ class Canvas extends Component {
                 <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
               </ul>
               <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
-              <img src={process.env.PUBLIC_URL + "/images/" +this.state.url+".jpg"} alt="user img" />
+              <img src={this.state.localURL+"/api/image/" +this.state.url} alt="user img" />
             </div>
             </div>
            );
