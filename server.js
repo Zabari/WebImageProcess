@@ -68,15 +68,18 @@ app.post('/api/undo', function (req, res) {
     var stmt=db.prepare("SELECT filename FROM files WHERE rowid=?");
     var id=stmt.get(filename);
     //console.log(id);
+    db.close();
     if (id){
-        db.prepare("DELETE FROM files WHERE rowid=?").run(filename);
+        //db.prepare("DELETE FROM files WHERE rowid=?").run(filename);
 
-        db.close();
-        shell.rm(pubdir+filename);
+
+        // shell.rm(pubdir+filename);
         // console.log(typeof id.filename);
         res.send({id:parseInt(id.filename).toString()});
     }
-    res.send();
+    else{
+        res.send({id:0});
+    }
 });
 
 app.get('/api/image/:id', function (req,res){
