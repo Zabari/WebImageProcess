@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import './Add.css';
+import Button from '@material-ui/core/Button';
+
 
 class Add extends Component{
 
@@ -43,7 +45,7 @@ class Add extends Component{
         return (
             <div className="Add">
                 Enter your url here:
-                <form onSubmit={this.handleSubmit}>
+                <form className ="input" onSubmit={this.handleSubmit}>
                 <input onChange = {this.handleChange} value={this.state.url}type="text"/>
                 </form>
             </div>
@@ -57,7 +59,7 @@ class Add extends Component{
         }
         else return(
             <div className="Add">
-                <button onClick={this.onClick}>Add Img</button>
+                <Button variant="contained" onClick={this.onClick}>Add Img</Button>
             </div>
         );
     }

@@ -6,6 +6,7 @@ import Rotate from './buttons/rotate/Rotate.js';
 import Undo from './buttons/undo/Undo.js';
 import Trim from './buttons/trim/Trim.js';
 import Add from './buttons/add/Add.js';
+import Toolbar from '@material-ui/core/Toolbar';
 
 'use strict';
 class Canvas extends Component {
@@ -272,15 +273,14 @@ class Canvas extends Component {
     renderImg(){
         return (
             <div className="Screen">
-            <ul>
-                <li><Filter callback = {this.filterCallback}/></li>
-                <li><Flip callback = {this.flipCallback} /></li>
-                <li><Rotate callback = {this.rotateCallback} /></li>
-                <li><Trim callback = {this.trimCallback} /></li>
-                <li><Undo callback = {this.undoCallback} enabled={this.state.undo} /></li>
-                <li><Add callback = {this.addCallback} /></li>
-                <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
-              </ul>
+                <ul>
+                    <li><Add callback = {this.addCallback} /></li>
+                    <li><Filter callback = {this.filterCallback}/></li>
+                    <li><Flip callback = {this.flipCallback} /></li>
+                    <li><Rotate callback = {this.rotateCallback} /></li>
+                    <li><Trim callback = {this.trimCallback} /></li>
+                    <li><Undo callback = {this.undoCallback} enabled={this.state.undo} /></li>
+                </ul>
               <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
               <img src={this.state.localURL+"/api/image/" +this.state.url} alt="user img" />
             </div>
@@ -299,13 +299,12 @@ class Canvas extends Component {
 
       <div className="Screen">
           <ul>
-              <li><Filter callback = {this.filterCallback}/></li>
+              {/* <li><Filter callback = {this.filterCallback}/></li>
               <li><Flip callback = {this.flipCallback} /></li>
               <li><Rotate callback = {this.rotateCallback} /></li>
               <li><Trim callback = {this.trimCallback} /></li>
-              <li><Undo callback = {this.undoCallback} enabled={this.state.undo} /></li>
+              <li><Undo callback = {this.undoCallback} enabled={this.state.undo} /></li> */}
               <li><Add callback = {this.addCallback} /></li>
-              <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
             </ul>
             <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
           </div>
