@@ -18,9 +18,14 @@ class Undo extends Component{
     }
 
     render(){
+        // let disabled=null;
+        // if (!this.props.enabled){
+        //     disabled= (disabled);
+        // }
+
         return(
             <div className="Undo">
-                <button onClick={this.onClick}>Undo</button>
+                <button onClick={this.onClick} disabled={!this.props.enabled}>Undo</button>
             </div>
         );
     }
