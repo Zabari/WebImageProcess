@@ -4,13 +4,19 @@ var session = require('express-session');
 var Database = require('better-sqlite3');
 var shell = require('shelljs');
 const download = require('image-downloader');
-const pubdir="frontend/webapp/public/images/";
+const pubdir="./images/";
+const path=require('path');
 app.use(session({
     resave: true,
     saveUninitialized: true,
     secret: "you-don't-know-this",
     commands:[]
 }));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 // var x=shell.exec("convert",{silent:true});
 // console.log(x.stdout);
 app.use(express.json());       // to support JSON-encoded bodies
@@ -28,25 +34,26 @@ app.post('/api/add', function (req, res) {
     db.close();
     var url=req.body.url;
     shell.mkdir("-p",pubdir);
-    const options = {
-        url: url,
-        dest: pubdir+id+".jpg"                 // Save to /path/to/dest/image.jpg
-    };
-    download.image(options)
-    .then(({ filename, image }) => {
-        console.log('File saved to', filename)
-        res.send({id});
-    })
-    .catch((err) => {
-        console.error(err)
-    });
+    // const options = {
+    //     url: url,
+    //     dest: pubdir+id                 // Save to /path/to/dest/image
+    // };
+    // download.image(options)
+    // .then(({ filename, image }) => {
+    //     console.log('File saved to', filename)
+    //     res.send({id});
+    // })
+    // .catch((err) => {
+    //     console.error(err)
+    // });
 
     // console.log(req.session);
 
-    // var str="curl "+url+" > "+pubdir+id;
+    var str="curl "+url+" > "+pubdir+id;
     // console.log(str);
 
-    // shell.exec(str,{silent:true});
+    shell.exec(str,{silent:true});
+    res.send({id});
 });
 app.post('/api', function (req, res) {
     res.send(req.session);
@@ -65,14 +72,18 @@ app.post('/api/undo', function (req, res) {
         db.prepare("DELETE FROM files WHERE rowid=?").run(filename);
 
         db.close();
-        shell.rm(pubdir+filename+".jpg");
+        shell.rm(pubdir+filename);
         console.log(typeof id.filename);
         res.send({id:parseInt(id.filename).toString()});
     }
     res.send();
 });
 
-
+app.get('/image/:id', function (req,res){
+    var file=path.join(__dirname,pubdir,req.params.id);
+    console.log(file);
+    res.sendFile(file);
+});
 app.post('/api/edit', function (req, res) {
     var command=req.body.command; //{command:command params:[param1,param2]}
     var params=req.body.params;
@@ -94,7 +105,7 @@ app.post('/api/edit', function (req, res) {
     var str="";
     if (command=="color"){
         console.log("made it");
-        str="convert "+pubdir+filename+".jpg -fill \""+params[0]+"\" -colorize "+params[1]+" "+pubdir+id+".jpg";
+        str="convert "+pubdir+filename+" -fill \""+params[0]+"\" -colorize "+params[1]+" "+pubdir+id;
     }
     if (command=="crop"){
         console.log(params);
@@ -110,11 +121,14 @@ app.post('/api/edit', function (req, res) {
         else{
             params[2]=params[2].toString();
         }
-        str="convert "+pubdir+filename+".jpg -crop '"+params[0]+params[1]+params[2]+"' "+pubdir+id+".jpg";
+        str="convert "+pubdir+filename+" -crop '"+params[0]+params[1]+params[2]+"' "+pubdir+id;
     }
     if (str){
         console.log(str);
         shell.exec(str);
+        // shell.exec(str,function(){
+        //     res.send({id});
+        // });
     }
     res.send({id});
 });
