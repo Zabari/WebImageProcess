@@ -123,6 +123,14 @@ app.post('/api/edit', function (req, res) {
         }
         str="convert "+pubdir+filename+" -crop '"+params[0]+params[1]+params[2]+"' "+pubdir+id;
     }
+    if (command=="flip"){
+        if (params[0]){
+            str="convert "+pubdir+filename+" -flip "+pubdir+id;
+        }
+        if (params[1]){
+            str="convert "+pubdir+filename+" -flop "+pubdir+id;
+        }
+    }
     if (str){
         console.log(str);
         shell.exec(str);
