@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import './Filter.css';
+import Button from '@material-ui/core/Button';
+
+
 
 class Filter extends Component{
 
@@ -11,7 +14,6 @@ class Filter extends Component{
             color: 0x00
         };
         this.onClick = this.onClick.bind(this);
-        this.renderInputs = this.renderInputs.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
 
@@ -40,26 +42,15 @@ class Filter extends Component{
     }
 
 
-    renderInputs(){
+    render(){
+       
         return(
-        <div className="slidecontainer">
+            <div className="slidecontainer">
             <input onChange = {this.handleChange}
             type="range" min="1" max="100" value={this.state.sliderValue} className="slider" id="myRange" />
             <input type="color" id="colorpicker"/>
-            <button onClick={this.handleSubmit}>Make Filter</button>
-            <button onClick={this.onClick}>{this.state.toggled ? (<b>Close Filter</b>) : (<b>Open Filter</b>) }</button>
+            <Button variant="contained" onClick={this.handleSubmit} size="small">Make Filter</Button>
         </div>
-        );
-    }
-
-    render(){
-        if(this.state.toggled){
-            return this.renderInputs();
-        }
-        return(
-            <div className="filter-button">
-        <button onClick={this.onClick}> <b>Filter</b> </button>
-            </div>
         );
     }
 

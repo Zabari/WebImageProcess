@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import './Flip.css';
+import Button from '@material-ui/core/Button';
+
 
 class Flip extends Component{
 
@@ -48,8 +50,8 @@ class Flip extends Component{
     render(){
         return(
             <div className="Flip">
-                <button onClick={this.onClickX}>Flip X</button>
-                <button onClick={this.onClickY}>Flip Y</button>
+                <Button variant="contained" onClick={this.onClickX}>Flip X</Button>
+                <Button variant="contained" onClick={this.onClickY}>Flip Y</Button>
             </div>
         );
     }
