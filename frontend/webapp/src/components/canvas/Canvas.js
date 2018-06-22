@@ -8,7 +8,6 @@ import Trim from './buttons/trim/Trim.js';
 import Add from './buttons/add/Add.js';
 
 'use strict';
-
 class Canvas extends Component {
 
   constructor(props){
@@ -34,7 +33,8 @@ class Canvas extends Component {
           flipped : {
               x : false,
               y : false
-          }
+          },
+          localURL:"http://localhost:3001"
       };
       this._onMouseMove=this._onMouseMove.bind(this);
       this.handleCanvasClick = this.handleCanvasClick.bind(this);
@@ -265,7 +265,7 @@ class Canvas extends Component {
                 <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
               </ul>
               <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
-              <img src={"http://localhost:3001/image/" +this.state.url} alt="user img" />
+              <img src={this.state.localURL+"/api/image/" +this.state.url} alt="user img" />
             </div>
             </div>
            );

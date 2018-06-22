@@ -79,7 +79,7 @@ app.post('/api/undo', function (req, res) {
     res.send();
 });
 
-app.get('/image/:id', function (req,res){
+app.get('/api/image/:id', function (req,res){
     var file=path.join(__dirname,pubdir,req.params.id);
     // console.log(file);
     res.sendFile(file);
