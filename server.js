@@ -67,13 +67,13 @@ app.post('/api/undo', function (req, res) {
     db.prepare("CREATE TABLE IF NOT EXISTS files(filename TEXT)").run();
     var stmt=db.prepare("SELECT filename FROM files WHERE rowid=?");
     var id=stmt.get(filename);
-    console.log(id);
+    //console.log(id);
     if (id){
         db.prepare("DELETE FROM files WHERE rowid=?").run(filename);
 
         db.close();
         shell.rm(pubdir+filename);
-        console.log(typeof id.filename);
+        // console.log(typeof id.filename);
         res.send({id:parseInt(id.filename).toString()});
     }
     res.send();
@@ -81,14 +81,14 @@ app.post('/api/undo', function (req, res) {
 
 app.get('/image/:id', function (req,res){
     var file=path.join(__dirname,pubdir,req.params.id);
-    console.log(file);
+    // console.log(file);
     res.sendFile(file);
 });
 app.post('/api/edit', function (req, res) {
     var command=req.body.command; //{command:command params:[param1,param2]}
     var params=req.body.params;
     var filename=req.body.filename;
-    console.log(command);
+    // console.log(command);
     // command=JSON.parse(command);
     if (!req.session.commands){
         req.session.commands=[];
@@ -104,11 +104,11 @@ app.post('/api/edit', function (req, res) {
     var url=req.body.url;
     var str="";
     if (command=="color"){
-        console.log("made it");
+        // console.log("made it");
         str="convert "+pubdir+filename+" -fill \""+params[0]+"\" -colorize "+params[1]+" "+pubdir+id;
     }
     if (command=="crop"){
-        console.log(params);
+        // console.log(params);
         if (params[1]>=0){
             params[1]="+"+params[1].toString();
         }
@@ -131,8 +131,11 @@ app.post('/api/edit', function (req, res) {
             str="convert "+pubdir+filename+" -flop "+pubdir+id;
         }
     }
+    if (command=="rotate"){
+        str="convert "+pubdir+filename+" -rotate 90 "+pubdir+id;
+    }
     if (str){
-        console.log(str);
+        // console.log(str);
         shell.exec(str);
         // shell.exec(str,function(){
         //     res.send({id});
