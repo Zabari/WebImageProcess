@@ -64,15 +64,19 @@ class Canvas extends Component {
             color: filterColor,
             percent : filterPercent
         }
-    }, () => this.performAction());
+    }, () => this.performAction({}));
   }
 
   flipCallback = (flipData) => {
+
     this.setState({
         command : 'flip',
         flipped : flipData
     }, ()=>
-    console.log(this.state.flipped));
+    this.performAction(          {flipped : {
+                  x : false,
+                  y : false
+              }}));
   }
 
   undoCallback = () => {
@@ -162,22 +166,27 @@ class Canvas extends Component {
                     flag : !this.state.flag,
                     trimDimensions : dimensionsCopy,
                     command : 'crop'
-                }, () => {console.log(this.state.trimDimensions);this.performAction();});
+                }, () => {console.log(this.state.trimDimensions);this.performAction({flag : !this.state.flag})});
             }
             //this.performAction();
         }
     }
 
 
-    performAction(){
+    performAction(prevState){
 
         let commandParams = [];
         if(this.state.command === 'color'){
             commandParams = [this.state.filter.color,this.state.filter.percent];
         }   else if(this.state.command === 'crop'){
             commandParams = [this.state.trimDimensions.area,this.state.trimDimensions.x,this.state.trimDimensions.y];
+
         }   else if(this.state.command === 'rotate'){
             commandParams = [this.state.degrees];
+        }
+            else if(this.state.command === 'flip'){
+                commandParams = [this.state.flipped.x,this.state.flipped.y];
+                // console.log(commandParams);
         }
 
         fetch("/api/edit", {
@@ -205,6 +214,10 @@ class Canvas extends Component {
             this.setState({
                 url : response.id
             });
+            // console.log(prevState);
+            this.setState(
+                prevState
+            );
         });
 
       }

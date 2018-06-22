@@ -62,7 +62,7 @@ typings/
 
 # images
 
-./images/
+images/
 
 #databases
 *.db
