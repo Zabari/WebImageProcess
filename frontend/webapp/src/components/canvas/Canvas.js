@@ -54,7 +54,7 @@ class Canvas extends Component {
         command : 'rotate',
         degrees : degreeData
       }, () =>
-      console.log(this.state.degrees));
+      this.performAction({}));
   }
 
   filterCallback = (filterColor,filterPercent) => {
@@ -166,7 +166,16 @@ class Canvas extends Component {
                     flag : !this.state.flag,
                     trimDimensions : dimensionsCopy,
                     command : 'crop'
-                }, () => {console.log(this.state.trimDimensions);this.performAction({flag : !this.state.flag})});
+                }, () => {console.log(this.state.trimDimensions);this.performAction(
+                    {
+                        flag : !this.state.flag,
+                        trimDimensions: {
+                            area: "",
+                            x: 0,
+                            y: 0
+                        },
+                        trimming:!this.state.trimming
+                    })});
             }
             //this.performAction();
         }
@@ -182,7 +191,7 @@ class Canvas extends Component {
             commandParams = [this.state.trimDimensions.area,this.state.trimDimensions.x,this.state.trimDimensions.y];
 
         }   else if(this.state.command === 'rotate'){
-            commandParams = [this.state.degrees];
+                commandParams = [this.state.degrees];
         }
             else if(this.state.command === 'flip'){
                 commandParams = [this.state.flipped.x,this.state.flipped.y];
