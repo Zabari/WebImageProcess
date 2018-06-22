@@ -34,7 +34,9 @@ class Canvas extends Component {
               x : false,
               y : false
           },
-          localURL:"http://104.131.44.27"
+          localURL:"http://104.131.44.27",
+          undo: false
+          
       };
       this._onMouseMove=this._onMouseMove.bind(this);
       this.handleCanvasClick = this.handleCanvasClick.bind(this);
@@ -98,7 +100,20 @@ class Canvas extends Component {
         .then ( (response) => response.json())
         .then ( (response) => {
             console.log(response.id);
-            this.setState({url:response.id});
+            const newundo=(response.id!=0);
+            //console.log(typeof response.id);
+            if (newundo){
+                this.setState({
+                    url:response.id,
+                    undo:newundo
+                });
+            }
+            else{
+                console.log("what is going on");
+                this.setState({
+                    undo:newundo
+                });
+            }
         }));
   }
 
@@ -220,8 +235,10 @@ class Canvas extends Component {
 
         .then ( (response) => response.json())
         .then ( (response) => {
+            const newundo=(response.id!=0);
             this.setState({
-                url : response.id
+                url : response.id,
+                undo: newundo
             });
             // console.log(prevState);
             this.setState(
@@ -260,7 +277,7 @@ class Canvas extends Component {
                 <li><Flip callback = {this.flipCallback} /></li>
                 <li><Rotate callback = {this.rotateCallback} /></li>
                 <li><Trim callback = {this.trimCallback} /></li>
-                <li><Undo callback = {this.undoCallback} /></li>
+                <li><Undo callback = {this.undoCallback} enabled={this.state.undo} /></li>
                 <li><Add callback = {this.addCallback} /></li>
                 <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
               </ul>
@@ -286,7 +303,7 @@ class Canvas extends Component {
               <li><Flip callback = {this.flipCallback} /></li>
               <li><Rotate callback = {this.rotateCallback} /></li>
               <li><Trim callback = {this.trimCallback} /></li>
-              <li><Undo callback = {this.undoCallback} /></li>
+              <li><Undo callback = {this.undoCallback} enabled={this.state.undo} /></li>
               <li><Add callback = {this.addCallback} /></li>
               <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
             </ul>
