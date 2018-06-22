@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import './Rotate.css';
+import Button from '@material-ui/core/Button';
 
 class Rotate extends Component{
 
@@ -26,8 +27,7 @@ class Rotate extends Component{
     render(){
         return(
             <div className="Rotate">
-                <button onClick={this.onClick}>Rotate Image</button>
-                <label>Current rotation: {this.state.degrees}</label>
+                <Button variant="contained" onClick={this.onClick}>Rotate Image</Button>
             </div>
         );
     }

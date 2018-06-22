@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import './Trim.css';
+import Button from '@material-ui/core/Button';
+
 
 class Trim extends Component{
 
@@ -25,13 +27,13 @@ class Trim extends Component{
         if(this.state.toggled){
             return(
              <div className="Trim">
-                <button className="selected" onClick={this.handleClick}>Trim Img</button>
+                <Button variant="contained" color="primary" className="selected" onClick={this.handleClick}>Trim Img</Button>
             </div>    
             );
         }
         return(
             <div className="Trim">
-                <button className="unselected" onClick={this.handleClick}>Trim Img</button>
+                <Button variant="contained" className="unselected" onClick={this.handleClick}>Trim Img</Button>
             </div>
         );
     }
