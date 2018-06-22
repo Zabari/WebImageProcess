@@ -243,7 +243,7 @@ class Canvas extends Component {
                 <li><button type ="button" onClick={this.handleSubmit}>do action</button></li>
               </ul>
               <div onMouseMove = {this._onMouseMove} onClick={this.handleCanvasClick} className="Canvas">
-              <img src={process.env.PUBLIC_URL + "/images/" +this.state.url+".jpg"} alt="user img" />
+              <img src={"http://localhost:3001/image/" +this.state.url} alt="user img" />
             </div>
             </div>
            );
