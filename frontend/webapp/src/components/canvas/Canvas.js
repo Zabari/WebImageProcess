@@ -34,8 +34,9 @@ class Canvas extends Component {
               x : false,
               y : false
           },
-          localURL:"http://localhost:3001",
+          localURL:"http://104.131.44.27",
           undo: false
+          
       };
       this._onMouseMove=this._onMouseMove.bind(this);
       this.handleCanvasClick = this.handleCanvasClick.bind(this);
